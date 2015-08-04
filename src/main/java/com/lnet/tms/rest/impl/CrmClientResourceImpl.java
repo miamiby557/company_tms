@@ -19,6 +19,7 @@ public class CrmClientResourceImpl implements CrmClientResource{
 
     @Autowired
     private CrmClientService crmClientService;
+
     @Autowired
     BaseRegionService baseRegionService;
 
