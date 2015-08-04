@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <!-- Shiro Filter -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login"/>
+        <property name="successUrl" value="/"/>
+        <property name="unauthorizedUrl" value="/login"/>
+        <property name="filterChainDefinitions">
+            <value>
+                /resources/** = anon
+                /login = anon
+                /initAdmin = anon
+                /init = anon
+                /service/** = anon
+                <!--/sysUser = roles[SYSADMIN]
+                /sysRole = perms[SYSUSER_MGT]-->
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+
+
+    <bean id="shiroRealm" class="com.lnet.tms.service.TmsAuthorizingRealm">
+        <property name="credentialsMatcher" ref="passwordMatcher"/>
+    </bean>
+
+    <bean id="passwordMatcher" class="com.lnet.tms.utility.PasswordMatcher"/>
+
+    <bean id="fileManager" class="com.lnet.tms.web.FileManager">
+        <property name="rootPath" value="uploads"/>
+    </bean>
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="shiroRealm"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>com.lnet.tms.model.base.BaseRegion</value>
+                <value>com.lnet.tms.model.base.BaseExacct</value>
+                <value>com.lnet.tms.model.crm.CrmClient</value>
+                <value>com.lnet.tms.model.crm.CrmClientLine</value>
+                <value>com.lnet.tms.model.crm.CrmClientQuote</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrder</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrderLog</value>
+                <value>com.lnet.tms.model.otd.OtdOrderSign</value>
+                <value>com.lnet.tms.model.otd.OtdPickupOrder</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrder</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrderDetail</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrderLog</value>
+                <value>com.lnet.tms.model.scm.ScmCarrier</value>
+                <value>com.lnet.tms.model.scm.ScmCarrierLine</value>
+                <value>com.lnet.tms.model.scm.ScmCarrierQuote</value>
+                <value>com.lnet.tms.model.sys.SysFunction</value>
+                <value>com.lnet.tms.model.sys.SysList</value>
+                <value>com.lnet.tms.model.sys.SysListItem</value>
+                <value>com.lnet.tms.model.sys.SysOrganization</value>
+                <value>com.lnet.tms.model.sys.SysRole</value>
+                <value>com.lnet.tms.model.sys.SysSetting</value>
+                <value>com.lnet.tms.model.sys.SysUser</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrderDetail</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayable</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableDetail</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableLog</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivable</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivableDetail</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivableLog</value>
+                <value>com.lnet.tms.model.base.BaseRegionView</value>
+                <value>com.lnet.tms.model.scm.ScmCarrierView</value>
+                <value>com.lnet.tms.model.scm.ScmCarrierQuoteView</value>
+                <value>com.lnet.tms.model.crm.CrmClientView</value>
+                <value>com.lnet.tms.model.crm.CrmClientQuoteView</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrderView</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrderView</value>
+                <value>com.lnet.tms.model.otd.OtdPickupOrderView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivableView</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrderLogView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableView</value>
+                <value>com.lnet.tms.model.otd.OtdOrderLogListView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableDetailView</value>
+                <value>com.lnet.tms.model.fee.FeeReceivableDetailView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableProportion</value>
+                <value>com.lnet.tms.model.fee.FeePayableProportionView</value>
+                <value>com.lnet.tms.model.sys.SysFile</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivableLogView</value>
+                <value>com.lnet.tms.model.rpt.RptViewOtdTransport</value>
+                <value>com.lnet.tms.model.rpt.RptViewOtdMonthsum</value>
+                <value>com.lnet.tms.model.rpt.RptViewClientMonthsum</value>
+                <value>com.lnet.tms.model.rpt.RptViewCheckIncome</value>
+                <value>com.lnet.tms.model.rpt.RptViewCheckPayable</value>
+                <value>com.lnet.tms.model.otd.OtdTransportOrderReceipt</value>
+                <value>com.lnet.tms.model.otd.OtdOrderCirculationView</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrderLogView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceivableDetailH</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableDetailH</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableProportionH</value>
+                <value>com.lnet.tms.model.fee.FeeOrderReceiveHistoryView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayHistoryView</value>
+                <value>com.lnet.tms.model.otd.OtdCarrierOrderDetailView</value>
+                <value>com.lnet.tms.model.fee.FeeOrderPayableLogView</value>
+                <value>com.lnet.tms.model.dispatch.DispatchAssign</value>
+                <value>com.lnet.tms.model.dispatch.DispatchAssignDetail</value>
+                <value>com.lnet.tms.model.dispatch.DispatchAssignStatusRecord</value>
+                <value>com.lnet.tms.model.crm.CrmClientOrderType</value>
+                <value>com.lnet.tms.model.crm.CrmClientPickupAddress</value>
+                <value>com.lnet.tms.model.crm.CrmClientProductType</value>
+
+                <value>com.lnet.tms.model.rpt.RptViewProductTracking</value>
+                <value>com.lnet.tms.model.otd.ChooseTransportOrderView</value>
+                <value>com.lnet.tms.model.dispatch.DispatchVehicle</value>
+                <value>com.lnet.tms.model.base.BaseHeavygoodsType</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.connection.url">jdbc:oracle:thin:@//192.168.10.18:1521/orcl</prop>
+                <prop key="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@//192.168.10.18:1521/orcl"/>
+        <property name="username" value="lnet_tms"/>
+        <property name="password" value="lnet_tms"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <context:component-scan base-package="com.lnet.tms.dao,com.lnet.tms.service,com.lnet.tms.rest"/>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--<bean id="initializer" class="com.lnet.tms.service.SystemInitializer" depends-on="transactionManager" />-->
+
+</beans>

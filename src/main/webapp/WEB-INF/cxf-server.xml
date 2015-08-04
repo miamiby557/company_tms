@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+
+    <jaxrs:server id="restService" address="/rest">
+        <jaxrs:serviceBeans>
+            <ref bean="sysUserResource"/>
+            <ref bean="crmClientResource" />
+            <ref bean="orderResource" />
+            <ref bean="scmCarrierResource" />
+            <ref bean="locationResource" />
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+                <property name="mapper">
+                    <bean id="jacksonObjectMapper" class="com.lnet.tms.rest.restUtil.RestObjectMapper">
+                    </bean>
+                </property>
+            </bean>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <bean id="sysUserResource" class="com.lnet.tms.rest.impl.SysUserResourceImpl" />
+    <bean id="crmClientResource" class="com.lnet.tms.rest.impl.CrmClientResourceImpl" />
+    <bean id="orderResource" class="com.lnet.tms.rest.impl.OrderResourceImpl" />
+    <bean id="scmCarrierResource" class="com.lnet.tms.rest.impl.ScmCarrierResourceImpl" />
+    <bean id="locationResource" class="com.lnet.tms.rest.impl.LocationResourceImpl" />
+
+</beans>
