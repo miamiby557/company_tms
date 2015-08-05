@@ -25,7 +25,7 @@ public class CrmClientResourceImpl implements CrmClientResource{
 
     @Override
     public ServiceResult getCrmClient() {
-
+        //add
         DataSourceResult dataSource = crmClientService.getDataSource(new DataSourceRequest());
         List<CrmClient> crmClientList = (List<CrmClient>)dataSource.getData();
         ServiceResult result = new ServiceResult(crmClientList);
