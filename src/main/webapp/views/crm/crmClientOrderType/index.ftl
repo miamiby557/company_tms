@@ -20,10 +20,6 @@
 <script>
 
 
-
-
-
-
     var GridModel = function () {
         var self = this;
         self.widget = ko.observable();
@@ -111,8 +107,8 @@
             });
         };
     };
-        $(function () {
-            var viewModel = new GridModel();
-            ko.applyBindings(viewModel, document.getElementById("grid-wrap"));
-        });
+    $(function () {
+        var viewModel = new GridModel();
+        ko.applyBindings(viewModel, document.getElementById("grid-wrap"));
+    });
 </script>

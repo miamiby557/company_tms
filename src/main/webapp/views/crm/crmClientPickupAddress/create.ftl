@@ -2,14 +2,12 @@
 <div>
     <form id="createPickupAddress" method="post" data-bind="submit:save" class="form-horizontal">
         <div class="col-12" data-bind="with:model">
-        <@form.koText field="address" label="提货地址" required="required" />
+         <@form.koText field="address" label="提货地址" required="required" />
             <@form.koTextarea field="remark" label="备注"  />
         </div>
         <div class="form-buttons">
             <button type="submit" class="k-button k-button-icontext k-primary "><i class="fa fa-save"></i> 保存</button>
-            <button type="button" data-action="closeModal" class="k-button k-button-icontext"><i
-                    class="fa fa-close"></i> 取消
-            </button>
+            <button type="button" data-action="closeModal" class="k-button k-button-icontext"><i class="fa fa-close"></i> 取消</button>
         </div>
     </form>
 

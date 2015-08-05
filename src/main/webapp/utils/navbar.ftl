@@ -100,6 +100,9 @@
             <li>
                 <a href="/#/baseHeavygoodsType"><i class="fa fa-gift"></i><span>重货类型</span></a>
             </li>
+            <li>
+                <a href="/#/baseAddress"><i class="fa fa-gift"></i><span>地址</span></a>
+            </li>
         </ul>
     </li>
 

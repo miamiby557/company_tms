@@ -38,7 +38,7 @@ public class CrmClientController extends CrudController<CrmClient, UUID, CrmClie
     @Autowired
     private HibernateAwareObjectMapper mapper;
     @Autowired
-    public void setBaseService(CrmClientService service) {
+    public void setBaseService(CrmClientService service)     {
         super.setService(service);
     }
 

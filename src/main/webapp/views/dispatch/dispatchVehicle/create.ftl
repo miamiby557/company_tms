@@ -20,7 +20,7 @@
             <@form.koTextarea field="remark" label="备注" maxlength="250"/>
 
             <div class="form-buttons">
-                <button type="submit" class="k-button k-button-icontext k-primary ">
+                <button type="submit" class="k-button k-button-iscontext k-primary ">
                     <i class="fa fa-save"></i> 保存
                 </button>
 

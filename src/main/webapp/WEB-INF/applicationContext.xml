@@ -119,6 +119,7 @@
                 <value>com.lnet.tms.model.otd.ChooseTransportOrderView</value>
                 <value>com.lnet.tms.model.dispatch.DispatchVehicle</value>
                 <value>com.lnet.tms.model.base.BaseHeavygoodsType</value>
+                <value>com.lnet.tms.model.base.BaseAddress</value>
             </list>
         </property>
         <property name="hibernateProperties">

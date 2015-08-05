@@ -218,7 +218,8 @@ var commonData = {
     orderDispatchType: ko.observableArray(),
     vehicleType: ko.observableArray(),
     dispatchAssignvehicleStatus:ko.observableArray(),
-    YesOrNo: ko.observableArray()
+    YesOrNo: ko.observableArray(),
+    baseAddressType:ko.observableArray()
 };
 
 $(function () {

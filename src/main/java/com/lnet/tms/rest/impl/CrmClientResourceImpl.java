@@ -25,6 +25,7 @@ public class CrmClientResourceImpl implements CrmClientResource{
 
     @Override
     public ServiceResult getCrmClient() {
+
         DataSourceResult dataSource = crmClientService.getDataSource(new DataSourceRequest());
         List<CrmClient> crmClientList = (List<CrmClient>)dataSource.getData();
         ServiceResult result = new ServiceResult(crmClientList);
@@ -33,6 +34,7 @@ public class CrmClientResourceImpl implements CrmClientResource{
 
     @Override
     public ServiceResult getCityList() {
+
         DataSourceResult dataSourceResult = baseRegionService.getDataSource(new DataSourceRequest());
         List<BaseRegion> baseRegionList = (List<BaseRegion>)dataSourceResult.getData();
         ServiceResult result = new ServiceResult(baseRegionList);
