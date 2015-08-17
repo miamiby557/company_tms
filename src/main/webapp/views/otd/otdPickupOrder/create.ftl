@@ -17,7 +17,7 @@
                 <input type="date" id="reservationTime" data-bind="kendoDateTimePicker:reservationTime" name="reservationTime" required="required"/>
             </div>
             <div class="form-group">
-                <label for="cityId">提货城市</label>
+                <label for="cityId">提货城市</label
             <#--<@utils.koComboBox data="$root.citys" value="cityId" textField="name" valueField="regionId" />-->
                 <input id="cityId" required="required" data-bind="kendoDropDownTreeView:{valueField: 'regionId',textField: 'name',treeView:$root.treeView,value:cityId,loadUrl:'/baseRegion/' }" />
             </div>

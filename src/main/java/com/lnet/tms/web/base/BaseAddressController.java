@@ -1,14 +1,18 @@
 package com.lnet.tms.web.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.lnet.tms.common.JsonResult;
 import com.lnet.tms.model.base.BaseAddress;
+import com.lnet.tms.model.crm.CrmClientReceiver;
 import com.lnet.tms.service.base.BaseAddressService;
+import com.lnet.tms.service.crm.CrmClientReceiverService;
 import com.lnet.tms.utility.HibernateAwareObjectMapper;
 import com.lnet.tms.web.CrudController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -22,6 +26,9 @@ import java.util.UUID;
 public class BaseAddressController extends CrudController<BaseAddress, UUID, BaseAddressService> {
     @Autowired
     private HibernateAwareObjectMapper mapper;
+
+    @Autowired
+    private CrmClientReceiverService crmClientReceiverService;
 
     @Autowired
     public void setBaseService(BaseAddressService service) {
@@ -38,11 +45,12 @@ public class BaseAddressController extends CrudController<BaseAddress, UUID, Bas
         return "base/address/create";
     }
 
+
     @RequestMapping("/modify/{addressId}")
     public String modify(@PathVariable UUID addressId, ModelMap model) throws JsonProcessingException {
         BaseAddress baseAddress = service.get(addressId);
         model.addAttribute("baseAddress", baseAddress);
-        model.addAttribute("baseAddress", mapper.writeValueAsString(baseAddress));
+        model.addAttribute("baseAddressJson", mapper.writeValueAsString(baseAddress));
         return "base/address/modify";
     }
 }

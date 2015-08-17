@@ -24,11 +24,11 @@ public class SysOrganizationService extends CrudService<SysOrganization, UUID, S
     @Override
     public UUID create(SysOrganization model) {
         model.setNamePinyin(GetPinyinUtil.getAllCharPinYin(model.getName()));
-        if(!StringUtils.isEmpty(model.getCityId())){
-            model.setCity(baseRegionDao.get(model.getCityId()).getName());
-        }
-        return super.create(model);
+    if(!StringUtils.isEmpty(model.getCityId())){
+        model.setCity(baseRegionDao.get(model.getCityId()).getName());
     }
+    return super.create(model);
+}
 
     @Override
     public void update(SysOrganization model) {

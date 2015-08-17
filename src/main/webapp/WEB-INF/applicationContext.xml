@@ -114,12 +114,15 @@
                 <value>com.lnet.tms.model.crm.CrmClientOrderType</value>
                 <value>com.lnet.tms.model.crm.CrmClientPickupAddress</value>
                 <value>com.lnet.tms.model.crm.CrmClientProductType</value>
-
+                <value>com.lnet.tms.model.crm.CrmClientSender</value>
+                <value>com.lnet.tms.model.crm.CrmClientSenderView</value>
                 <value>com.lnet.tms.model.rpt.RptViewProductTracking</value>
                 <value>com.lnet.tms.model.otd.ChooseTransportOrderView</value>
                 <value>com.lnet.tms.model.dispatch.DispatchVehicle</value>
                 <value>com.lnet.tms.model.base.BaseHeavygoodsType</value>
                 <value>com.lnet.tms.model.base.BaseAddress</value>
+                <value>com.lnet.tms.model.crm.CrmClientReceiver</value>
+                <value>com.lnet.tms.model.base.CrmReceiverAddressView</value>
             </list>
         </property>
         <property name="hibernateProperties">

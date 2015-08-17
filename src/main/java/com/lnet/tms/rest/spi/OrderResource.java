@@ -1,9 +1,11 @@
 package com.lnet.tms.rest.spi;
 
 
+import com.lnet.tms.model.dispatch.DispatchAssign;
 import com.lnet.tms.model.otd.OtdCarrierOrder;
 import com.lnet.tms.model.otd.OtdCarrierOrderBean;
 import com.lnet.tms.model.otd.OtdTransportOrder;
+import com.lnet.tms.rest.restUtil.FeeDeclare;
 import com.lnet.tms.rest.restUtil.FeeOrderPayables;
 import com.lnet.tms.rest.restUtil.OrderListRequest;
 import com.lnet.tms.rest.restUtil.ServiceResult;
@@ -84,5 +86,31 @@ public interface OrderResource {
     @GET
     @Path("/getOrganization")
     ServiceResult getOrganization();
+
+    @POST
+    @Path("/feeDeclare")
+    @Consumes({"application/json"})
+    ServiceResult createFeeDeclare(FeeDeclare feeDeclare);
+
+    @GET
+    @Path("/getCars")
+    ServiceResult getCars();
+
+    @POST
+    @Path("/createDispatchAssign")
+    @Consumes({"application/json"})
+    ServiceResult createDispatchAssign(DispatchAssign assign);
+
+    @GET
+    @Path("/getDispatchAssignList/{userId}")
+    ServiceResult getDispatchAssignList(@PathParam("userId")UUID userId);
+
+    @POST
+    @Path("/getDispatchAssignListByNumber")
+    ServiceResult getDispatchAssignListByNumber(OrderListRequest request);
+
+    @GET
+    @Path("/getDispatchAssignById/{assignById}")
+    ServiceResult getDispatchAssignById(@PathParam("assignById")UUID assignById);
 
 }

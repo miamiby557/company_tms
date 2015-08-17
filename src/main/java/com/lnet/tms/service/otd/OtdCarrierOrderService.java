@@ -291,6 +291,9 @@ public class OtdCarrierOrderService extends CrudService<OtdCarrierOrder, UUID, O
         SysUser sysUser = IdentityUtils.getCurrentUser();
         OtdCarrierOrder model = new OtdCarrierOrder();
         BeanUtils.copyProperties(bean,model);
+        if(model.getSendDate()==null){
+            model.setSendDate(new Date());
+        }
         model.setStartCity(baseRegionDao.get(model.getStartCityId()).getName());
         model.setDestCity(baseRegionDao.get(model.getDestCityId()).getName());
         model.setExpectedDate(getExpectedDate(model));//预计到达时间

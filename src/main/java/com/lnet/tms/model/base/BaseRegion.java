@@ -16,7 +16,7 @@ public class BaseRegion {
     private String name;
     private String namePinyin;
     private Integer regionTypeId;
-    private UUID superiorRegionId;
+        private UUID superiorRegionId;
     private BaseRegion superiorRegion;
     private Set<BaseRegion> subRegions = new HashSet<>();
 

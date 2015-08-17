@@ -99,6 +99,10 @@ public abstract class BaseService<T, ID extends Serializable, DAO extends BaseDa
         return dao.getAllByFieldDesc(field, value,descName);
     }
 
+    public List<T> getAllByAsc(String ascName) {
+        return dao.getAllByAsc(ascName);
+    }
+
     public List<T> getAllByFieldWith(String field, Object value, String... associationPaths) {
         return dao.getAllByFieldWith(field, value, associationPaths);
     }

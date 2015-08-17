@@ -4,6 +4,9 @@ import com.lnet.tms.dao.SequenceDao;
 import com.lnet.tms.model.base.BaseExacct;
 import com.lnet.tms.model.base.BaseRegion;
 import com.lnet.tms.model.crm.CrmClient;
+import com.lnet.tms.model.dispatch.DispatchAssign;
+import com.lnet.tms.model.dispatch.DispatchAssignDetail;
+import com.lnet.tms.model.dispatch.DispatchVehicle;
 import com.lnet.tms.model.fee.FeeOrderPayable;
 import com.lnet.tms.model.fee.FeeOrderPayableDetail;
 import com.lnet.tms.model.otd.OtdCarrierOrder;
@@ -18,6 +21,8 @@ import com.lnet.tms.rest.spi.OrderResource;
 import com.lnet.tms.service.base.BaseExacctService;
 import com.lnet.tms.service.base.BaseRegionService;
 import com.lnet.tms.service.crm.CrmClientService;
+import com.lnet.tms.service.dispatch.DispatchAssignService;
+import com.lnet.tms.service.dispatch.DispatchVehicleService;
 import com.lnet.tms.service.fee.FeeOrderPayableDetailService;
 import com.lnet.tms.service.fee.FeeOrderPayableService;
 import com.lnet.tms.service.fee.PayableCalculator;
@@ -32,7 +37,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.misc.BASE64Decoder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -82,6 +94,12 @@ public class OrderResourceImpl implements OrderResource{
 
     @Autowired
     private ScmCarrierService carrierService;
+
+    @Autowired
+    private DispatchVehicleService vehicleService;
+
+    @Autowired
+    private DispatchAssignService assignService;
 
     @Override
     public ServiceResult getTransportOrderByNumber(String orderNumber) {
@@ -366,5 +384,106 @@ public class OrderResourceImpl implements OrderResource{
         List<SysOrganization> organizationList = organizationService.getAll();
         ServiceResult result = new ServiceResult(organizationList);
         return result;
+    }
+
+    @Override
+    public ServiceResult createFeeDeclare(FeeDeclare feeDeclare) {
+        // 对base64数据进行解码 生成 字节数组，不能直接用Base64.decode（）；进行解密
+        String rootPath = "";
+        FileOutputStream out = null;
+        Path storePath = Paths.get(rootPath, "pic", UUID.randomUUID().toString()+".jpg");
+        File destFile = new File(storePath.toUri());
+        if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
+        System.out.println("filePath:"+destFile.toString());
+        if(feeDeclare.getImagesString()!=null){
+            try {
+                byte[] photoimg = new BASE64Decoder().decodeBuffer(feeDeclare.getImagesString());
+                for (int i = 0; i < photoimg.length; ++i) {
+                    if (photoimg[i] < 0) {
+                        // 调整异常数据
+                        photoimg[i] += 256;
+                    }
+                }
+                out = new FileOutputStream(destFile);
+                out.write(photoimg);
+                out.flush();
+                return new ServiceResult();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if(out!=null){
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return new ServiceResult(false);
+    }
+
+    @Override
+    public ServiceResult getCars() {
+        List<DispatchVehicle> vehicles = vehicleService.getAllByAsc("vehicleNumber");
+        ServiceResult result = new ServiceResult(vehicles);
+        return result;
+    }
+
+    @Override
+    public ServiceResult createDispatchAssign(DispatchAssign assign) {
+        try {
+            //计算总数
+            countTransportOrder(assign);
+            assignService.create(assign);
+            return new ServiceResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ServiceResult(false);
+        }
+    }
+
+    private void countTransportOrder(DispatchAssign assign) {
+        Set<DispatchAssignDetail> details = assign.getDetails();
+        for(DispatchAssignDetail detail:details){
+            UUID transportOrderId = detail.getOrderId();
+            OtdTransportOrder otdTransportOrder = transportOrderService.get(transportOrderId);
+            assign.setTotalItemQuantity(assign.getTotalItemQuantity()==null?0:assign.getTotalItemQuantity()+changeInteger(otdTransportOrder.getTotalItemQuantity()));
+            assign.setTotalPackageQuantity(assign.getTotalPackageQuantity()==null?0:assign.getTotalPackageQuantity() + changeInteger(otdTransportOrder.getTotalPackageQuantity()));
+            assign.setTotalVolume(add(assign.getTotalVolume()==null?new Double(0):assign.getTotalVolume(),otdTransportOrder.getConfirmedVolume()));
+            assign.setTotalWeight(add(assign.getTotalWeight()==null?new Double(0):assign.getTotalWeight(),otdTransportOrder.getConfirmedWeight()));
+        }
+    }
+
+    public static double add(double v1, double v2) {
+        BigDecimal b1 = new BigDecimal(Double.toString(v1));
+        BigDecimal b2 = new BigDecimal(Double.toString(v2));
+        return b1.add(b2).doubleValue();
+    }
+
+    public static int changeInteger(Integer integer){
+       if(integer==null){
+           return 0;
+       }
+       return integer.intValue();
+    }
+
+    @Override
+    public ServiceResult getDispatchAssignList(UUID userId) {
+        List<DispatchAssign> assigns = assignService.getAllByFieldDesc("createUserId", userId, "createDate");
+        ServiceResult result = new ServiceResult(assigns);
+        return result;
+    }
+
+    @Override
+    public ServiceResult getDispatchAssignListByNumber(OrderListRequest request) {
+        List<DispatchAssign> assigns = assignService.getList("dispatchAssignNumber",request.getNumber(),request.getUserId(),"createDate");
+        return new ServiceResult(assigns);
+    }
+
+    @Override
+    public ServiceResult getDispatchAssignById(UUID assignById) {
+        DispatchAssign assign = assignService.get(assignById);
+        return new ServiceResult(assign);
     }
 }

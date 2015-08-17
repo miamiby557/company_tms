@@ -26,10 +26,13 @@
             产品类型
         </li>
         <li>
-            提货地址
+            送货地址
         </li>
         <li>
             重货类型
+        </li>
+        <li>
+            客户收货地址
         </li>
     </ul>
     <div>
@@ -51,9 +54,12 @@
     <#include "/views/crm/productType/index.ftl">
     </div>
     <div>
-        <#include  "/views/crm/crmClientPickupAddress/index.ftl">
+        <#include  "/views/crm/crmClientSender/index.ftl">
     </div>
     <div>
     <#include  "/views/crm/heavyGoodsType/index.ftl">
+    </div>
+    <div>
+        <#include  "/views/crm/crmClientReceiver/index.ftl">
     </div>
 </div>

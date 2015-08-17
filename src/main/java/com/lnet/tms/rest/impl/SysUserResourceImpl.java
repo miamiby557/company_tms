@@ -63,7 +63,12 @@ public class SysUserResourceImpl implements SysUserResource {
             result.addMessage(e.getMessage());
         }
         return result;
+    }
 
+    @Override
+    public ServiceResult logout() {
+        IdentityUtils.getSubject().logout();
+        return new ServiceResult();
     }
 
     @Override

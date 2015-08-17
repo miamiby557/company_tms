@@ -1,28 +1,48 @@
-package com.lnet.tms.model.base;
-
-import org.hibernate.annotations.GenericGenerator;
+package com.lnet.tms.model.crm;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * Created by Administrator on 2015/8/4.
+ * Created by develop on 2015/8/11.
  */
 @Entity
-@Table(name = "BASE_ADDRESS", schema = "LNET_TMS", catalog = "")
-public class BaseAddress {
+@Table(name = "CRM_CLIENT_SENDER_VIEW", schema = "LNET_TMS", catalog = "")
+public class CrmClientSenderView {
+    private UUID clientSenderId;
+    private UUID clientId;
     private UUID addressId;
-    private Integer addressType;
+    private BigDecimal addressType;
     private String contactMan;
     private String contactPhone;
     private UUID region;
     private String address;
+    private String name;
 
     @Id
+    @javax.persistence.Column(name = "CLIENT_SENDER_ID", nullable = false, insertable = true, updatable = true)
+    public UUID getClientSenderId() {
+        return clientSenderId;
+    }
+
+    public void setClientSenderId(UUID clientSenderId) {
+        this.clientSenderId = clientSenderId;
+    }
+
+    @Basic
+    @Column(name = "CLIENT_ID")
+    public UUID getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(UUID clientId) {
+        this.clientId = clientId;
+    }
+
+    @Basic
     @Column(name = "ADDRESS_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
     public UUID getAddressId() {
         return addressId;
     }
@@ -33,11 +53,11 @@ public class BaseAddress {
 
     @Basic
     @Column(name = "ADDRESS_TYPE")
-    public Integer getAddressType() {
+    public BigDecimal getAddressType() {
         return addressType;
     }
 
-    public void setAddressType(Integer addressType) {
+    public void setAddressType(BigDecimal addressType) {
         this.addressType = addressType;
     }
 
@@ -81,4 +101,13 @@ public class BaseAddress {
         this.address = address;
     }
 
+    @Basic
+    @Column(name = "NAME")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

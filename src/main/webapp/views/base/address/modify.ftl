@@ -5,7 +5,7 @@
         <@form.koDropDown field="addressType" data="$root.addressType" label="地址类型" required="required"/>
         <@form.koTextarea field="contactMan" label="联系人" />
         <@form.koTextarea field="contactPhone" label="联系电话" />
-        <@form.kendoDropDownTreeView valueField='regionId' textField="name" field="region" value="cityId" treeView="$root.treeViewRegion"
+        <@form.kendoDropDownTreeView valueField='regionId' textField="name" field="region" treeView="$root.treeViewRegion"
         label="地区" required="required" loadUrl='/baseRegion/' />
         <@form.koTextarea field="address" label="地址"  maxlength="200"/>
         </div>
@@ -23,7 +23,7 @@
     function CreateModel() {
         var self = this;
         self.model = {};
-        self.model = ko.mapping.fromJS(${baseAddress});
+        self.model = ko.mapping.fromJS(${baseAddressJson});
         self.addressType=commonData.baseAddressType;
         var Regions = kendo.utils.createHierarchicalDataSource("regionId","baseRegion/getChildrenData");
         self.treeViewRegion = {

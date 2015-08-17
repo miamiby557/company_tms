@@ -25,6 +25,10 @@ public interface SysUserResource {
     @Consumes({"application/json"})
     ServiceResult login(SysUser user);
 
+    @POST
+    @Path("/logout")
+    ServiceResult logout();
+
     @GET
     @Path("/testService")
     ServiceResult testService();

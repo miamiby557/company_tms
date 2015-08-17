@@ -220,6 +220,12 @@ public abstract class BaseDao<T, ID extends Serializable> {
         criteria.addOrder(Order.desc(descName));
         return criteria.list();
     }
+    public List<T> getAllByAsc(String ascName) {
+        Criteria criteria = getSession().createCriteria(persistentClass);
+        criteria.addOrder(Order.asc(ascName));
+        return criteria.list();
+    }
+
 
     public List<T> getAllByField(Map<String, Object> map) {
         Session session = getSession();
