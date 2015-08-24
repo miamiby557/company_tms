@@ -4,11 +4,9 @@ package com.lnet.tms.rest.spi;
 import com.lnet.tms.model.dispatch.DispatchAssign;
 import com.lnet.tms.model.otd.OtdCarrierOrder;
 import com.lnet.tms.model.otd.OtdCarrierOrderBean;
+import com.lnet.tms.model.otd.OtdOrderSign;
 import com.lnet.tms.model.otd.OtdTransportOrder;
-import com.lnet.tms.rest.restUtil.FeeDeclare;
-import com.lnet.tms.rest.restUtil.FeeOrderPayables;
-import com.lnet.tms.rest.restUtil.OrderListRequest;
-import com.lnet.tms.rest.restUtil.ServiceResult;
+import com.lnet.tms.rest.restUtil.*;
 
 import javax.ws.rs.*;
 import java.util.UUID;
@@ -23,6 +21,20 @@ public interface OrderResource {
     @GET
     @Path("/transportOrder/{orderNumber}")
     ServiceResult getTransportOrderByNumber(@PathParam("orderNumber")String orderNumber);
+
+    //查找客户是否有此单号
+    @POST
+    @Path("/getTransportOrderByClient")
+    @Consumes({"application/json"})
+    ServiceResult getTransportOrderByClient(OrderRequest orderRequest);
+
+    //查找承运商是否有此单号
+    @POST
+    @Path("/getCarrierOrderByCarrier")
+    @Consumes({"application/json"})
+    ServiceResult getCarrierOrderByCarrier(OrderRequest orderRequest);
+
+
 
     @GET
     @Path("/getTransportOrderById/{orderId}")
@@ -112,5 +124,12 @@ public interface OrderResource {
     @GET
     @Path("/getDispatchAssignById/{assignById}")
     ServiceResult getDispatchAssignById(@PathParam("assignById")UUID assignById);
+
+    /**
+     * 订单签收*/
+    @POST
+    @Path("/orderSignUp")
+    @Consumes({"application/json"})
+    ServiceResult orderSignUp(AppOrderSign appOrderSign);
 
 }

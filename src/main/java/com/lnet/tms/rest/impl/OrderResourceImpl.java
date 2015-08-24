@@ -9,9 +9,7 @@ import com.lnet.tms.model.dispatch.DispatchAssignDetail;
 import com.lnet.tms.model.dispatch.DispatchVehicle;
 import com.lnet.tms.model.fee.FeeOrderPayable;
 import com.lnet.tms.model.fee.FeeOrderPayableDetail;
-import com.lnet.tms.model.otd.OtdCarrierOrder;
-import com.lnet.tms.model.otd.OtdCarrierOrderBean;
-import com.lnet.tms.model.otd.OtdTransportOrder;
+import com.lnet.tms.model.otd.*;
 import com.lnet.tms.model.scm.ScmCarrier;
 import com.lnet.tms.model.sys.SysList;
 import com.lnet.tms.model.sys.SysListItem;
@@ -28,6 +26,7 @@ import com.lnet.tms.service.fee.FeeOrderPayableService;
 import com.lnet.tms.service.fee.PayableCalculator;
 import com.lnet.tms.service.otd.OtdCarrierOrderDetailService;
 import com.lnet.tms.service.otd.OtdCarrierOrderService;
+import com.lnet.tms.service.otd.OtdOrderSignService;
 import com.lnet.tms.service.otd.OtdTransportOrderService;
 import com.lnet.tms.service.scm.ScmCarrierService;
 import com.lnet.tms.service.sys.SysListItemService;
@@ -45,6 +44,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -101,6 +101,9 @@ public class OrderResourceImpl implements OrderResource{
     @Autowired
     private DispatchAssignService assignService;
 
+    @Autowired
+    private OtdOrderSignService orderSignService;
+
     @Override
     public ServiceResult getTransportOrderByNumber(String orderNumber) {
         if(transportOrderService.existsBy("clientOrderNumber",orderNumber)){
@@ -124,7 +127,29 @@ public class OrderResourceImpl implements OrderResource{
         return result;
     }
 
+    @Override
+    public ServiceResult getTransportOrderByClient(OrderRequest orderRequest) {
+        Map<String ,Object> map = new HashMap<>();
+        map.put("clientId",orderRequest.getId());
+        map.put("clientOrderNumber",orderRequest.getOrderNumber());
+        OtdTransportOrder order = transportOrderService.getByField(map);
+        if(order!=null){
+           return new ServiceResult();
+        }
+        return new ServiceResult(false);
+    }
 
+    @Override
+    public ServiceResult getCarrierOrderByCarrier(OrderRequest orderRequest) {
+        Map<String ,Object> map = new HashMap<>();
+        map.put("carrierId",orderRequest.getId());
+        map.put("carrierOrderNumber",orderRequest.getOrderNumber());
+        OtdCarrierOrder order = carrierOrderService.getByField(map);
+        if(order!=null){
+           return new ServiceResult();
+        }
+        return new ServiceResult(false);
+    }
 
     @Override
     public ServiceResult getTransportOrderById(UUID orderId) {
@@ -296,6 +321,14 @@ public class OrderResourceImpl implements OrderResource{
     @Transactional
     public ServiceResult transportOrderCreate(OtdTransportOrder otdTransportOrder) {
         otdTransportOrder.setLnetOrderNumber(sequenceDao.formatSequenceNumber("SEQ_TRANORDER_NUMBER", "00000000", "LNET", ""));
+        if(otdTransportOrder.getStartCityId()!=null&&otdTransportOrder.getStartCity()==null){
+            BaseRegion baseRegion = baseRegionService.get(otdTransportOrder.getStartCityId());
+            otdTransportOrder.setStartCity(baseRegion.getName());
+        }
+        if(otdTransportOrder.getDestCityId()!=null&&otdTransportOrder.getDestCity()==null){
+            BaseRegion baseRegion = baseRegionService.get(otdTransportOrder.getDestCityId());
+            otdTransportOrder.setDestCity(baseRegion.getName());
+        }
         transportOrderService.saveOrUpdate(otdTransportOrder);
         ServiceResult result = new ServiceResult(otdTransportOrder);
         return result;
@@ -304,14 +337,32 @@ public class OrderResourceImpl implements OrderResource{
     @Override
     @Transactional
     public ServiceResult carrierOrderCreate(OtdCarrierOrderBean otdCarrierOrderBean) {
-        if(carrierOrderService.existsBy("carrierOrderNumber", otdCarrierOrderBean.getCarrierOrderNumber())){
-            ServiceResult result = new ServiceResult(false);
-            result.addMessage("该托运单号已存在！");
-            return result;
+        OtdCarrierOrder otdCarrierOrder = carrierOrderService.getByField("carrierOrderNumber",otdCarrierOrderBean.getCarrierOrderNumber());
+        if(otdCarrierOrder!=null){
+           return new ServiceResult(false);
         }
+        if(otdCarrierOrderBean.getStartCityId()!=null&&otdCarrierOrderBean.getStartCity()==null){
+            BaseRegion baseRegion = baseRegionService.get(otdCarrierOrderBean.getStartCityId());
+            otdCarrierOrderBean.setStartCity(baseRegion.getName());
+        }
+        if(otdCarrierOrderBean.getDestCityId()!=null&&otdCarrierOrderBean.getDestCity()==null){
+            BaseRegion baseRegion = baseRegionService.get(otdCarrierOrderBean.getDestCityId());
+            otdCarrierOrderBean.setDestCity(baseRegion.getName());
+        }
+        updateTransportReceivePageNumberAndWrapType(otdCarrierOrderBean);
         UUID orderPayableId = carrierOrderService.send(otdCarrierOrderBean);
         ServiceResult result = new ServiceResult(new FeeOrderPayable(orderPayableId));
         return result;
+    }
+
+    private void updateTransportReceivePageNumberAndWrapType(OtdCarrierOrderBean otdCarrierOrderBean) {
+        for(OtdCarrierOrderDetailView detailView:otdCarrierOrderBean.getDetailViews()){
+            UUID uuid = detailView.getTransportOrderId();
+            OtdTransportOrder transportOrder = transportOrderService.get(uuid);
+            transportOrder.setReceiptPageNumber(detailView.getReceiptPageNumber());
+            transportOrder.setWrapType(detailView.getWrapType());
+            transportOrderService.update(transportOrder);
+        }
     }
 
     @Override
@@ -330,6 +381,7 @@ public class OrderResourceImpl implements OrderResource{
         return result;
     }
 
+
     @Override
     @Transactional
     public ServiceResult updatePayable(UUID orderPayableId,FeeOrderPayables payables) {
@@ -337,12 +389,15 @@ public class OrderResourceImpl implements OrderResource{
         if(payable!=null){
             //把已保存的费用先清空
             payable.getDetails().clear();
+            double count = new Double(0);
             //这一步更新可能修改的费用
             for(FeeOrderPayableJson payableJson:payables.getPayableJsonSet()){
-                FeeOrderPayableDetail detail = new FeeOrderPayableDetail(UUID.fromString(payableJson.getExacctId()),payableJson.getExacctMoney(),orderPayableId,payable);
+                FeeOrderPayableDetail detail = new FeeOrderPayableDetail(UUID.fromString(payableJson.getExacctId()),new Double(payableJson.getExacctMoney()),orderPayableId,payable);
                 payableDetailService.saveOrUpdate(detail);
                 payable.getDetails().add(detail);
+                count = add(count,payableJson.getExacctMoney());
             }
+            payable.setTotalAmount(count);
             feeOrderPayableService.saveOrUpdate(payable);
             ServiceResult result = new ServiceResult(payable);
             return result;
@@ -388,39 +443,8 @@ public class OrderResourceImpl implements OrderResource{
 
     @Override
     public ServiceResult createFeeDeclare(FeeDeclare feeDeclare) {
-        // 对base64数据进行解码 生成 字节数组，不能直接用Base64.decode（）；进行解密
-        String rootPath = "";
-        FileOutputStream out = null;
-        Path storePath = Paths.get(rootPath, "pic", UUID.randomUUID().toString()+".jpg");
-        File destFile = new File(storePath.toUri());
-        if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
-        System.out.println("filePath:"+destFile.toString());
-        if(feeDeclare.getImagesString()!=null){
-            try {
-                byte[] photoimg = new BASE64Decoder().decodeBuffer(feeDeclare.getImagesString());
-                for (int i = 0; i < photoimg.length; ++i) {
-                    if (photoimg[i] < 0) {
-                        // 调整异常数据
-                        photoimg[i] += 256;
-                    }
-                }
-                out = new FileOutputStream(destFile);
-                out.write(photoimg);
-                out.flush();
-                return new ServiceResult();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                if(out!=null){
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return new ServiceResult(false);
+        FileSaveUtil.save(UUID.randomUUID().toString(),feeDeclare.getImagesString());
+        return new ServiceResult();
     }
 
     @Override
@@ -486,4 +510,21 @@ public class OrderResourceImpl implements OrderResource{
         DispatchAssign assign = assignService.get(assignById);
         return new ServiceResult(assign);
     }
+
+    @Override
+    public ServiceResult orderSignUp(AppOrderSign appOrderSign) {
+        try {
+            OtdOrderSign otdOrderSign = new OtdOrderSign();
+            FileSaveUtil.save(appOrderSign.getTransportOrderNumber(),appOrderSign.getPhotoString());
+            OtdTransportOrder transportOrder = transportOrderService.getByField("clientOrderNumber",appOrderSign.getTransportOrderNumber());
+            appOrderSign.setTransportOrderId(transportOrder.getTransportOrderId());
+            BeanUtils.copyProperties(appOrderSign,otdOrderSign);
+            orderSignService.create(otdOrderSign);
+            return new ServiceResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ServiceResult(false);
+        }
+    }
+
 }

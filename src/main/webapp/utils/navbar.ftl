@@ -71,6 +71,12 @@
             <li><a href="/#/rptViewOtdTransport"><span>运作报表</span></a></li>
         </ul>
         <ul>
+            <li><a href="/#/report/reportIndex"><span>动态报表</span></a></li>
+        </ul>
+        <ul>
+            <li><a href="/#/report/transportReportIndex"><span>动态运作报表</span></a></li>
+        </ul>
+        <ul>
             <li><a href="/#/rptViewInformationTracking"><span>信息跟踪报表</span></a></li>
         </ul>
         <ul>

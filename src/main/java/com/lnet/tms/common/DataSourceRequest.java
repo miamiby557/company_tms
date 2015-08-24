@@ -242,5 +242,8 @@ public class DataSourceRequest {
         public List<FilterDescriptor> getFilters() {
             return filters;
         }
+        public List<FilterDescriptor> setFilters(List<FilterDescriptor> filters) {
+            return this.filters=filters;
+        }
     }
 }

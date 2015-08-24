@@ -22,6 +22,7 @@ public class OtdCarrierOrderDetail {
     private Integer confirmedPackageQuantity;
     private Double confirmedVolume;
     private Double confirmedWeight;
+
     private OtdCarrierOrder otdCarrierOrder;
 
     @Id

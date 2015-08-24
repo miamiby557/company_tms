@@ -8,6 +8,7 @@ import com.lnet.tms.utility.DateUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
+import sun.org.mozilla.javascript.internal.regexp.SubString;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class FileManager {
     private SysFileService sysFileService;
 
     private String rootPath = "";
+    private String reportPath="";
 
     public String getRootPath() {
         return rootPath;
@@ -34,6 +36,14 @@ public class FileManager {
 
     public void setRootPath(String rootPath) {
         this.rootPath = rootPath;
+    }
+
+    public String getReportPath() {
+        return reportPath;
+    }
+
+    public void setReportPath(String reportPath) {
+        this.reportPath = reportPath;
     }
 
     private SysFile saveToDisk(MultipartFile file) throws IOException {
@@ -58,6 +68,31 @@ public class FileManager {
         sysFile.setStoredPath(storePath.toString());
         return sysFile;
     }
+    private SysFile reportSaveToDisk(MultipartFile file,String fileCode) throws IOException {
+        String result=null;
+        SysFile sysFile = new SysFile();
+        String filename = file.getOriginalFilename();
+
+        Path storePath = Paths.get(reportPath,filename);
+        File destFile = new File(storePath.toUri());
+        sysFile.setFileId(UUID.randomUUID());
+        sysFile.setContentType(file.getContentType());
+        sysFile.setCreateUserId(IdentityUtils.getCurrentUser().getUserId());
+        sysFile.setCreateDate(DateUtils.getTimestampNow());
+        sysFile.setFileName(filename);
+        sysFile.setIsImage(isImage(file.getContentType()));
+        String extension = FilenameUtils.getExtension(sysFile.getFileName());
+        sysFile.setExtension(extension);
+        sysFile.setFileCode(fileCode);
+        sysFile.setUploadType(1);
+
+
+        if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
+        file.transferTo(destFile);
+        sysFile.setStoredPath(storePath.toString());
+        return sysFile;
+
+    }
 
     public boolean isImage(String contentType) {
         String type = contentType.split("/")[0];
@@ -66,6 +101,11 @@ public class FileManager {
 
     public SysFile upload(MultipartFile file) throws IOException {
         SysFile sysFile = saveToDisk(file);
+        sysFileService.create(sysFile);
+        return sysFile;
+    }
+    public SysFile ReportUpload(MultipartFile file,String fileCode) throws IOException {
+        SysFile sysFile= reportSaveToDisk(file,fileCode);
         sysFileService.create(sysFile);
         return sysFile;
     }

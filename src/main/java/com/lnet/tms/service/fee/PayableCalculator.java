@@ -168,12 +168,7 @@ public class PayableCalculator {
         orderPayable.setPaymentType(order.getPaymentType());
         orderPayable.setCalculateType(order.getCalculateType());
         SysUser sysUser = IdentityUtils.getCurrentUser();
-        if(sysUser!=null){
-            orderPayable.setCreateUserId(sysUser.getUserId());
-
-        }else{
-            orderPayable.setCreateUserId(order.getCreateUserId());
-        }
+        orderPayable.setCreateUserId(sysUser.getUserId());
         orderPayable.setCreateDate(DateUtils.getTimestampNow());
         orderPayable.setBranchId(IdentityUtils.getCurrentUser().getBranchId());
         orderPayable.setSiteId(IdentityUtils.getCurrentUser().getSiteId());

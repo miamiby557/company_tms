@@ -234,36 +234,35 @@
                     field: "carrierOrderReportRemark",
                     title: "应付费用说明",
                     width: 120
+                }/*,{
+                    field: "payableFreight",
+                    title: "直接运费",
+                    width: 120
                 },{
-                        field: "payableFreight",
-                        title: "直接运费",
-                        width: 120
-                    },{
-                        field: "payableDelivery",
-                        title: "送货费",
-                        width: 120
-                    },{
-                        field: "payablePickupfee",
-                        title: "提货费",
-                        width: 120
-                    },{
-                        field: "payableUpstairs",
-                        title: "上楼费",
-                        width: 120
-                    },{
-                        field: "payableOther",
-                        title: "其他费用",
-                        width: 120
-                    },{
-                        field: "sendAmount",
-                        title: "合计",
-                        width: 120
-                    },{
-                field: "carrierOrderReportRemark",
-                        title: "应付费用说明",
-                        width: 120
-            }
-                }
+                    field: "payableDelivery",
+                    title: "送货费",
+                    width: 120
+                },{
+                    field: "payablePickupfee",
+                    title: "提货费",
+                    width: 120
+                },{
+                    field: "payableUpstairs",
+                    title: "上楼费",
+                    width: 120
+                },{
+                    field: "payableOther",
+                    title: "其他费用",
+                    width: 120
+                },{
+                    field: "sendAmount",
+                    title: "合计",
+                    width: 120
+                },{
+                    field: "carrierOrderReportRemark",
+                    title: "应付费用说明",
+                    width: 120
+                }*/
                 ]},{
                 field: "crossProfit",
                 title: "毛利",
@@ -292,10 +291,6 @@
                 title: "毛利净额",
                 value:0,
                 width: 60
-            },{
-                title: "货物价值",
-                value:0,
-                width: 120
             },{
                 field:"goodsValue",
                 title: "货物价值",

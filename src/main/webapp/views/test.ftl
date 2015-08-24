@@ -99,6 +99,11 @@
         <button type="submit">submit</button>
     </form>
 </div>
+<div class="boxtest">
+    <form action="/fileUpload" method="post" enctype="multipart/form-data">
+        <button type="submit">submit</button>
+    </form>
+</div>
 
 <script>
 

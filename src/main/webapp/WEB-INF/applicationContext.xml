@@ -19,6 +19,7 @@
                 /initAdmin = anon
                 /init = anon
                 /service/** = anon
+                /picUpload=anon
                 <!--/sysUser = roles[SYSADMIN]
                 /sysRole = perms[SYSUSER_MGT]-->
                 /** = authc
@@ -36,6 +37,10 @@
 
     <bean id="fileManager" class="com.lnet.tms.web.FileManager">
         <property name="rootPath" value="uploads"/>
+        <property name="reportPath" value="WEB-INF/jasper"/>
+    </bean>
+    <bean id="homeController" class="com.lnet.tms.web.HomeController">
+        <property name="picPath" value="WEB-INF/receiptPic"/>
     </bean>
 
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">

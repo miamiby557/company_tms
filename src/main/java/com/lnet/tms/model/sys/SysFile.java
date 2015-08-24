@@ -17,6 +17,8 @@ public class SysFile {
     private String contentType;
     private UUID createUserId;
     private Timestamp createDate;
+    private String fileCode;
+    private int uploadType;
 
     @Id
     @Column(name = "FILE_ID", nullable = false, insertable = true, updatable = true)
@@ -99,5 +101,26 @@ public class SysFile {
 
     public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
+    }
+
+    @Basic
+    @Column(name = "FILE_CODE", nullable = true, insertable = true, updatable = true)
+
+    public String getFileCode() {
+        return fileCode;
+    }
+
+    public void setFileCode(String fileCode) {
+        this.fileCode = fileCode;
+    }
+
+    @Basic
+    @Column(name = "UPLOAD_TYPE", nullable = true, insertable = true, updatable = true)
+    public int getUploadType() {
+        return uploadType;
+    }
+
+    public void setUploadType(int uploadType) {
+        this.uploadType = uploadType;
     }
 }
