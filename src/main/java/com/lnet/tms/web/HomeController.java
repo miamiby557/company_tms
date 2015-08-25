@@ -42,19 +42,7 @@ public class HomeController {
     private SysRoleService roleService;
 
     @Autowired
-    private FileManager fileManager;
-
-    @Autowired
     private SystemUtils systemUtils;
-
-    private String picPath="";
-
-    public void setPicPath(String picPath) {
-        this.picPath = picPath;
-    }
-    public String getPicPath() {
-        return picPath;
-    }
 
     @RequestMapping(method = RequestMethod.GET)
     public String layout(ModelMap model) {
@@ -193,7 +181,7 @@ public class HomeController {
         OutputStream os = null;
         try {
             is = request.getInputStream();
-            File file = new File(picPath + pic +".jpg");
+            File file = new File("F:\\upload\\" + pic +".jpg");
             os = new FileOutputStream(file);
             int length = 0;
             byte[] bytes = new byte[4096];

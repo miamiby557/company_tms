@@ -1,6 +1,7 @@
 package com.lnet.tms.rest.impl;
 
 import com.lnet.tms.model.sys.SysUser;
+import com.lnet.tms.rest.restUtil.AppLoginReturnInfo;
 import com.lnet.tms.rest.restUtil.ServiceResult;
 import com.lnet.tms.rest.restUtil.UpdatePwd;
 import com.lnet.tms.rest.spi.SysUserResource;
@@ -8,6 +9,7 @@ import com.lnet.tms.service.IdentityUtils;
 import com.lnet.tms.service.sys.SysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.FormParam;
@@ -57,7 +59,10 @@ public class SysUserResourceImpl implements SysUserResource {
             token.setRememberMe(false);
             SecurityUtils.getSubject().login(token);
             SysUser sysUser = IdentityUtils.getCurrentUser();
-            result.setContent(sysUser);
+            AppLoginReturnInfo info = new AppLoginReturnInfo();
+            BeanUtils.copyProperties(sysUser,info);
+            info.setNextTime(15*60*1000L);
+            result.setContent(info);
         } catch (Exception e) {
             result.setSuccess(false);
             result.addMessage(e.getMessage());

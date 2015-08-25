@@ -118,4 +118,7 @@ public abstract class BaseService<T, ID extends Serializable, DAO extends BaseDa
     public T getByField(Map<String, Object> map){
         return dao.getByField(map);
     }
+    public List<T> getListByField(Map<String, Object> map){
+        return dao.getListByField(map);
+    }
 }

@@ -34,7 +34,9 @@ public interface OrderResource {
     @Consumes({"application/json"})
     ServiceResult getCarrierOrderByCarrier(OrderRequest orderRequest);
 
-
+    @GET
+    @Path("/getTransportOrderByCarrierOrder/{orderNumber}")
+    ServiceResult getTransportOrderByCarrierOrder(@PathParam("orderNumber")String orderNumber);
 
     @GET
     @Path("/getTransportOrderById/{orderId}")

@@ -6,6 +6,7 @@ import java.util.UUID;
  * Created by Administrator on 2015/8/21.
  */
 public class OrderRequest {
+
     private UUID id;
     private String orderNumber;
 

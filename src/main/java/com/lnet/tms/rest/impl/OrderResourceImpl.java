@@ -24,10 +24,7 @@ import com.lnet.tms.service.dispatch.DispatchVehicleService;
 import com.lnet.tms.service.fee.FeeOrderPayableDetailService;
 import com.lnet.tms.service.fee.FeeOrderPayableService;
 import com.lnet.tms.service.fee.PayableCalculator;
-import com.lnet.tms.service.otd.OtdCarrierOrderDetailService;
-import com.lnet.tms.service.otd.OtdCarrierOrderService;
-import com.lnet.tms.service.otd.OtdOrderSignService;
-import com.lnet.tms.service.otd.OtdTransportOrderService;
+import com.lnet.tms.service.otd.*;
 import com.lnet.tms.service.scm.ScmCarrierService;
 import com.lnet.tms.service.sys.SysListItemService;
 import com.lnet.tms.service.sys.SysListService;
@@ -41,6 +38,7 @@ import sun.misc.BASE64Decoder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -150,6 +148,30 @@ public class OrderResourceImpl implements OrderResource{
         }
         return new ServiceResult(false);
     }
+
+    @Override
+    public ServiceResult getTransportOrderByCarrierOrder(String orderNumber) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("clientOrderNumber",orderNumber);
+        map.put("status",2);
+        List<OtdTransportOrder> orders = transportOrderService.getListByField(map);
+        int size = orders.size();
+        if(size==0){
+           return new ServiceResult(false);
+        }else if(size==1){
+            return new ServiceResult(orders);
+        }else {
+            List<HelpItem> items = new ArrayList<>();
+            for(OtdTransportOrder order:orders){
+                CrmClient crmClient = crmClientService.get(order.getClientId());
+                String clientName = crmClient.getName();
+                HelpItem item = new HelpItem(order.getTransportOrderId(),clientName,order.getClientOrderNumber());
+                items.add(item);
+            }
+            return new ServiceResult(items);
+        }
+    }
+
 
     @Override
     public ServiceResult getTransportOrderById(UUID orderId) {
@@ -321,11 +343,11 @@ public class OrderResourceImpl implements OrderResource{
     @Transactional
     public ServiceResult transportOrderCreate(OtdTransportOrder otdTransportOrder) {
         otdTransportOrder.setLnetOrderNumber(sequenceDao.formatSequenceNumber("SEQ_TRANORDER_NUMBER", "00000000", "LNET", ""));
-        if(otdTransportOrder.getStartCityId()!=null&&otdTransportOrder.getStartCity()==null){
+        if(otdTransportOrder.getStartCityId()!=null){
             BaseRegion baseRegion = baseRegionService.get(otdTransportOrder.getStartCityId());
             otdTransportOrder.setStartCity(baseRegion.getName());
         }
-        if(otdTransportOrder.getDestCityId()!=null&&otdTransportOrder.getDestCity()==null){
+        if(otdTransportOrder.getDestCityId()!=null){
             BaseRegion baseRegion = baseRegionService.get(otdTransportOrder.getDestCityId());
             otdTransportOrder.setDestCity(baseRegion.getName());
         }
@@ -341,11 +363,11 @@ public class OrderResourceImpl implements OrderResource{
         if(otdCarrierOrder!=null){
            return new ServiceResult(false);
         }
-        if(otdCarrierOrderBean.getStartCityId()!=null&&otdCarrierOrderBean.getStartCity()==null){
+        if(otdCarrierOrderBean.getStartCityId()!=null){
             BaseRegion baseRegion = baseRegionService.get(otdCarrierOrderBean.getStartCityId());
             otdCarrierOrderBean.setStartCity(baseRegion.getName());
         }
-        if(otdCarrierOrderBean.getDestCityId()!=null&&otdCarrierOrderBean.getDestCity()==null){
+        if(otdCarrierOrderBean.getDestCityId()!=null){
             BaseRegion baseRegion = baseRegionService.get(otdCarrierOrderBean.getDestCityId());
             otdCarrierOrderBean.setDestCity(baseRegion.getName());
         }
@@ -515,7 +537,11 @@ public class OrderResourceImpl implements OrderResource{
     public ServiceResult orderSignUp(AppOrderSign appOrderSign) {
         try {
             OtdOrderSign otdOrderSign = new OtdOrderSign();
-            FileSaveUtil.save(appOrderSign.getTransportOrderNumber(),appOrderSign.getPhotoString());
+            List<String> photos = appOrderSign.getPhotoStrings();
+            int size = appOrderSign.getPhotoStrings().size();
+            for(int i =0;i<size;i++){
+                FileSaveUtil.save(appOrderSign.getTransportOrderNumber()+"-"+(i+1),photos.get(i));
+            }
             OtdTransportOrder transportOrder = transportOrderService.getByField("clientOrderNumber",appOrderSign.getTransportOrderNumber());
             appOrderSign.setTransportOrderId(transportOrder.getTransportOrderId());
             BeanUtils.copyProperties(appOrderSign,otdOrderSign);

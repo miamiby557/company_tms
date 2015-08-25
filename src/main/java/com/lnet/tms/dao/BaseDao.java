@@ -148,6 +148,15 @@ public abstract class BaseDao<T, ID extends Serializable> {
         return (T) criteria.setMaxResults(1).uniqueResult();
     }
 
+    public List<T> getListByField(Map<String, Object> map) {
+        Session session = getSession();
+        Criteria criteria = session.createCriteria(persistentClass);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            criteria = criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+        }
+        return (List<T>) criteria.list();
+    }
+
     public T get(ID id) {
         return (T) getSession().get(persistentClass, id);
     }

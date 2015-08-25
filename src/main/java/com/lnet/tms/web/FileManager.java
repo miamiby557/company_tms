@@ -27,19 +27,11 @@ public class FileManager {
     @Autowired
     private SysFileService sysFileService;
 
-    private String rootPath = "";
-    private String reportPath="";
-
-    public String getRootPath() {
-        return rootPath;
-    }
+    private String rootPath;
+    private String reportPath;
 
     public void setRootPath(String rootPath) {
         this.rootPath = rootPath;
-    }
-
-    public String getReportPath() {
-        return reportPath;
     }
 
     public void setReportPath(String reportPath) {
@@ -69,12 +61,12 @@ public class FileManager {
         return sysFile;
     }
     private SysFile reportSaveToDisk(MultipartFile file,String fileCode) throws IOException {
-        String result=null;
         SysFile sysFile = new SysFile();
         String filename = file.getOriginalFilename();
 
         Path storePath = Paths.get(reportPath,filename);
         File destFile = new File(storePath.toUri());
+
         sysFile.setFileId(UUID.randomUUID());
         sysFile.setContentType(file.getContentType());
         sysFile.setCreateUserId(IdentityUtils.getCurrentUser().getUserId());
@@ -86,12 +78,10 @@ public class FileManager {
         sysFile.setFileCode(fileCode);
         sysFile.setUploadType(1);
 
-
         if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
         file.transferTo(destFile);
         sysFile.setStoredPath(storePath.toString());
         return sysFile;
-
     }
 
     public boolean isImage(String contentType) {

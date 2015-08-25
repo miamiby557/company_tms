@@ -22,7 +22,7 @@ public class OtdTransportOrder  extends BaseEntity {
     private String obligateClientNumber;
     private String marketClientNumber;
     private String lnetOrderNumber;
-//    private UUID branchId;
+//    private UUID  branchId;
     private UUID clientId;
     private Date orderDate;
     private Integer orderType;
