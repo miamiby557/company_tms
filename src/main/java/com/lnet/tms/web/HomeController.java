@@ -8,6 +8,7 @@ import com.lnet.tms.service.sys.SysRoleService;
 import com.lnet.tms.service.sys.SysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.omg.CORBA.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.jstl.sql.Result;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +45,9 @@ public class HomeController {
 
     @Autowired
     private SystemUtils systemUtils;
+
+    @Autowired
+    private FileManager fileManager;
 
     @RequestMapping(method = RequestMethod.GET)
     public String layout(ModelMap model) {
@@ -181,7 +186,7 @@ public class HomeController {
         OutputStream os = null;
         try {
             is = request.getInputStream();
-            File file = new File("F:\\upload\\" + pic +".jpg");
+            File file=fileManager.PicUpload(pic);
             os = new FileOutputStream(file);
             int length = 0;
             byte[] bytes = new byte[4096];

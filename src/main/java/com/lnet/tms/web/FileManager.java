@@ -1,8 +1,12 @@
 package com.lnet.tms.web;
 
 
+import com.lnet.tms.model.otd.OtdOrderReceiptPic;
+import com.lnet.tms.model.otd.OtdTransportOrder;
 import com.lnet.tms.model.sys.SysFile;
 import com.lnet.tms.service.IdentityUtils;
+import com.lnet.tms.service.otd.OtdOrderReceiptPicService;
+import com.lnet.tms.service.otd.OtdTransportOrderService;
 import com.lnet.tms.service.sys.SysFileService;
 import com.lnet.tms.utility.DateUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -12,6 +16,7 @@ import sun.org.mozilla.javascript.internal.regexp.SubString;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,9 +31,14 @@ public class FileManager {
 
     @Autowired
     private SysFileService sysFileService;
+    @Autowired
+    private OtdTransportOrderService otdTransportOrderService;
+    @Autowired
+    private OtdOrderReceiptPicService otdOrderReceiptPicService;
 
     private String rootPath;
     private String reportPath;
+    private String picPath;
 
     public void setRootPath(String rootPath) {
         this.rootPath = rootPath;
@@ -36,6 +46,10 @@ public class FileManager {
 
     public void setReportPath(String reportPath) {
         this.reportPath = reportPath;
+    }
+
+    public void setPicPath(String picPath) {
+        this.picPath = picPath;
     }
 
     private SysFile saveToDisk(MultipartFile file) throws IOException {
@@ -84,6 +98,21 @@ public class FileManager {
         return sysFile;
     }
 
+    private OtdOrderReceiptPic picSaveToDisk(String fileName){
+        OtdOrderReceiptPic otdOrderReceiptPic=new OtdOrderReceiptPic();
+        String picName=fileName.substring(fileName.indexOf("-")+1);
+        OtdTransportOrder otdTransportOrder= otdTransportOrderService.getByField("clientOrderNumber",picName);
+
+        otdOrderReceiptPic.setOrderReceiptPicId(UUID.randomUUID());
+        otdOrderReceiptPic.setTransportOrderId(otdTransportOrder.getTransportOrderId());
+        otdOrderReceiptPic.setPicName(fileName + ".jpg");
+        otdOrderReceiptPic.setPicPath(picPath+"/" + fileName + ".jpg");
+        //otdOrderReceiptPic.setCreateUserId(IdentityUtils.getCurrentUser().getUserId());
+        otdOrderReceiptPic.setCreateDate(DateUtils.getTimestampNow());
+
+        return otdOrderReceiptPic;
+    }
+
     public boolean isImage(String contentType) {
         String type = contentType.split("/")[0];
         return type.equals("image");
@@ -98,6 +127,13 @@ public class FileManager {
         SysFile sysFile= reportSaveToDisk(file,fileCode);
         sysFileService.create(sysFile);
         return sysFile;
+    }
+    public File PicUpload(String picName){
+        File file=null;
+        OtdOrderReceiptPic otdOrderReceiptPic=picSaveToDisk(picName);
+        otdOrderReceiptPicService.create(otdOrderReceiptPic);
+        file=new File(otdOrderReceiptPic.getPicPath());
+        return file;
     }
 
     public List<SysFile> upload(List<MultipartFile> files) {

@@ -352,6 +352,8 @@ public class OrderResourceImpl implements OrderResource{
             otdTransportOrder.setDestCity(baseRegion.getName());
         }
         transportOrderService.saveOrUpdate(otdTransportOrder);
+        //计算应收
+        transportOrderService.confirm(otdTransportOrder,"confirm");
         ServiceResult result = new ServiceResult(otdTransportOrder);
         return result;
     }
